@@ -1,9 +1,10 @@
 import Head from 'next/head'
-import { ChangeEvent, FormEvent, useState } from 'react'
+import { ChangeEvent, FormEvent, useRef, useState } from 'react'
 import {
   ChatCompletionRequestMessage,
   ChatCompletionRequestMessageRoleEnum,
 } from 'openai'
+import Message from '../components/Message'
 
 type messageWithID = {
   id: number
@@ -56,6 +57,7 @@ export default function Home() {
       body: JSON.stringify(formattedChat),
     })
     const data = await response.json()
+    console.log(data)
 
     const newChatFromAssistant: messageWithID[] = [
       ...newChatFromUser,
@@ -74,21 +76,34 @@ export default function Home() {
         <link rel='icon' href='/favicon.ico' />
       </Head>
 
-      <main>
-        {chat?.map(
-          (response) =>
-            response.message.role !== 'system' && (
-              <p key={response.id}>
-                <span>{response.message.role}</span>
-                {response.message.content}
-              </p>
-            )
-        )}
+      <main className='min-h-screen bg-zinc-800 text-zinc-200'>
+        <div className='max-w-2xl mx-auto px-5 pt-20 pb-40'>
+          {chat?.map(
+            (response) =>
+              response.message.role !== 'system' && (
+                <Message
+                  key={response.id}
+                  role={response.message.role}
+                  content={response.message.content}
+                />
+              )
+          )}
 
-        <form onSubmit={handleSubmit}>
-          <input type='text' value={userInput} onChange={handleChange} />
-          <button type='submit'>Send</button>
-        </form>
+          <form onSubmit={handleSubmit} className='mt-10 flex gap-3'>
+            <input
+              type='text'
+              value={userInput}
+              onChange={handleChange}
+              className='px-4 py-1.5 flex-1 rounded-md bg-zinc-700 text-zinc-200'
+            />
+            <button
+              type='submit'
+              className='px-5 py-1 rounded-md bg-indigo-600'
+            >
+              Send
+            </button>
+          </form>
+        </div>
       </main>
     </>
   )
