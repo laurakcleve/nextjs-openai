@@ -5,13 +5,15 @@ import {
   ChatCompletionRequestMessageRoleEnum,
 } from 'openai'
 import Message from '../components/Message'
+import MessageSource from '@/components/MessageSource'
 
-type messageWithID = {
+export type CustomMessage = {
   id: number
   message: ChatCompletionRequestMessage
+  source?: string
 }
 
-const initialMessages: messageWithID[] = [
+const initialMessages: CustomMessage[] = [
   {
     id: Date.now(),
     message: {
@@ -47,24 +49,16 @@ export default function Home() {
 
     setChat(newChatFromUser)
 
-    const formattedChat = newChatFromUser.map((item) => item.message)
-
     const response = await fetch('/api/chat', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(formattedChat),
+      body: JSON.stringify({ newChatFromUser, userInput }),
     })
     const data = await response.json()
-    console.log(data)
 
-    const newChatFromAssistant: messageWithID[] = [
-      ...newChatFromUser,
-      { id: data.created, message: data.choices[0].message },
-    ]
-
-    setChat(newChatFromAssistant)
+    setChat(data)
   }
 
   return (
@@ -78,16 +72,22 @@ export default function Home() {
 
       <main className='min-h-screen bg-zinc-800 text-zinc-200'>
         <div className='max-w-2xl mx-auto px-5 pt-20 pb-40'>
-          {chat?.map(
-            (response) =>
-              response.message.role !== 'system' && (
-                <Message
-                  key={response.id}
-                  role={response.message.role}
-                  content={response.message.content}
-                />
-              )
-          )}
+          <div className='divide-y divide-zinc-700'>
+            {chat?.map(
+              (response) =>
+                response.message.role !== 'system' && (
+                  <div key={response.id} className='py-8'>
+                    <Message
+                      role={response.message.role}
+                      content={response.message.content}
+                    />
+                    {response.source && (
+                      <MessageSource slug={response.source} />
+                    )}
+                  </div>
+                )
+            )}
+          </div>
 
           <form onSubmit={handleSubmit} className='mt-10 flex gap-3'>
             <input
