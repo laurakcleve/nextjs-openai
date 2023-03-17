@@ -10,7 +10,7 @@ import { promises as fs } from 'fs'
 import type { CustomMessage } from '..'
 
 const configuration = new Configuration({
-  organization: 'org-vBOX7k6OuVhsci26Jxd1eIAS',
+  organization: process.env.OPENAI_ORG,
   apiKey: process.env.OPENAI_API_KEY,
 })
 
