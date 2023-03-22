@@ -26,14 +26,14 @@ const logger = winston.createLogger({
 
 type IndexChunk = {
   content: string
-  name: string
+  url: string
   vector: number[]
 }
 
 type Score = {
   score: number
   content: string
-  name: string
+  url: string
 }
 
 const EMBEDDING_MODEL = 'text-embedding-ada-002'
@@ -74,7 +74,7 @@ export default async function handler(
     return {
       score: similarity(queryVector, chunk.vector),
       content: chunk.content,
-      name: chunk.name,
+      url: chunk.url,
     }
   })
   scores.sort((a, b) => b.score - a.score)
@@ -110,7 +110,7 @@ export default async function handler(
     {
       id: completion.data.created,
       message: { ...assistantMessage, content: strippedMessage },
-      source: sourceFound ? scores[0].name : null,
+      source: sourceFound ? scores[0].url : null,
     },
   ]
 

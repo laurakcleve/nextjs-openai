@@ -5,7 +5,6 @@ import {
   ChatCompletionRequestMessageRoleEnum,
 } from 'openai'
 import Message from '../components/Message'
-import MessageSource from '@/components/MessageSource'
 
 export type CustomMessage = {
   id: number
@@ -82,7 +81,14 @@ export default function Home() {
                       content={response.message.content}
                     />
                     {response.source && (
-                      <MessageSource slug={response.source} />
+                      <div className='pt-6'>
+                        <a
+                          href={response.source}
+                          className='text-orange-100 border-b-2 border-b-orange-300'
+                        >
+                          Source
+                        </a>
+                      </div>
                     )}
                   </div>
                 )
